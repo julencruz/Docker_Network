@@ -1,0 +1,123 @@
+services:
+  loadbalancer:
+    image: nginx
+    container_name: LoadBalancer
+    hostname: LoadBalancer
+    ports:
+      - "20000:8000"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      FrontendNet:
+        ipv4_address: 172.18.0.2
+    depends_on:
+      - webserver1
+      - webserver2
+      - webserver3
+      - webserver4
+      - webserver5
+
+  webserver1:
+    build: ../php-apache
+    container_name: WebServer1
+    hostname: WebServer1
+    networks:
+      FrontendNet:
+        ipv4_address: 172.18.0.11
+      BackendNet:
+        ipv4_address: 172.19.0.11
+
+  webserver2:
+    build: ../php-apache
+    container_name: WebServer2
+    hostname: WebServer2
+    networks:
+      FrontendNet:
+        ipv4_address: 172.18.0.12
+      BackendNet:
+        ipv4_address: 172.19.0.12
+
+  webserver3:
+    build: ../php-apache
+    container_name: WebServer3
+    hostname: WebServer3
+    networks:
+      FrontendNet:
+        ipv4_address: 172.18.0.13
+      BackendNet:
+        ipv4_address: 172.19.0.13
+
+  webserver4:
+    build: ../php-apache
+    container_name: WebServer4
+    hostname: WebServer4
+    networks:
+      FrontendNet:
+        ipv4_address: 172.18.0.14
+      BackendNet:
+        ipv4_address: 172.19.0.14
+
+  webserver5:
+    build: ../php-apache
+    container_name: WebServer5
+    hostname: WebServer5
+    networks:
+      FrontendNet:
+        ipv4_address: 172.18.0.15
+      BackendNet:
+        ipv4_address: 172.19.0.15
+
+  database:
+    image: postgres
+    container_name: Database
+    hostname: Database
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_USER: useradmin
+      POSTGRES_PASSWORD: secure1234
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      BackendNet:
+        ipv4_address: 172.19.0.10
+      ManagementNet:
+        ipv4_address: 172.20.0.10
+
+  databaseManager:
+    image: dpage/pgadmin4
+    container_name: DataBaseManager
+    hostname: DataBaseManager
+    ports:
+      - "20001:8000"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: secretsecret
+      PGADMIN_LISTEN_PORT: 8000
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      ManagementNet:
+        ipv4_address: 172.20.0.2
+
+networks:
+  FrontendNet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+  BackendNet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+  ManagementNet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  pgdata:
+  pgadmin-data:
