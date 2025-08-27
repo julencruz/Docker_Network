@@ -3,6 +3,8 @@
 
 This project demonstrates the deployment of a complete professional network infrastructure using **Docker Compose**. It includes a load balancer, multiple Apache/PHP web servers, a PostgreSQL database, and a PGAdmin manager — all connected via virtual networks and persistent volumes.
 
+This project was developed by **Julen Cruz** and **Igor Ulyanov** for the **ATS** course.
+
 ---
 
 ## 🧱 Architecture
